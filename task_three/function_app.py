@@ -3,6 +3,7 @@ import logging
 import random
 import json
 import time
+from ..task_one_two.function_app import Sensor
 
 
 app = func.FunctionApp()
