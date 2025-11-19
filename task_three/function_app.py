@@ -3,7 +3,6 @@ import logging
 import random
 import json
 import time
-from ..task_one_two.function_app import Sensor
 
 
 app = func.FunctionApp()
@@ -67,3 +66,36 @@ def sensor_sql_trigger(sensorChanges: str, sensorData: func.SqlRowList) -> None:
                 minimum = min(vals)
                 maximum = max(vals)
                 response += f"  {d} - Avg: {avg:.2f}, Min: {minimum}, Max: {maximum}\n"
+    logging.info("Processed sensor changes:\n%s", response)
+
+class Sensor:
+    def __init__(self, sensor_id: int):
+        self.sensor_id = sensor_id
+
+    def get_data(self):
+        return {
+            "sensorId": self.sensor_id,
+            "temperature": self.read_temperature(),
+            "windSpeed": self.read_wind_speed(),
+            "humidity": self.read_humidity(),
+            "carbonLevel": self.read_co2_level()
+        }
+
+    def round_normal(self, low, high):
+        while True:
+            x = random.normalvariate((high + low) / 2, (high + low) / 6)
+            if low <= x <= high:
+                return round(x, 2)
+            return low if x < low else high
+
+    def read_temperature(self):
+        return self.round_normal(5, 18)
+
+    def read_wind_speed(self):
+        return self.round_normal(12, 24)
+
+    def read_humidity(self):
+        return self.round_normal(30, 60)
+
+    def read_co2_level(self):
+        return self.round_normal(400, 1000)
